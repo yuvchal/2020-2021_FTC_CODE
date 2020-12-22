@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
     @Autonomous(name="LeftBack", group="BionicBot")
+    @Disabled
 public class RobotLeftBack extends LinearOpMode
 {
 HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
@@ -29,15 +31,9 @@ public void runOpMode()
     telemetry.addData("Status", "Resetting Encoders");    //
     telemetry.update();
 
-       /* robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
 
-    robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
     telemetry.addData("Path0",  "Starting at %7d :%7d",
             robot.leftDrive.getCurrentPosition(),
@@ -48,8 +44,26 @@ public void runOpMode()
 
     waitForStart();
 
-    robot.leftBack.setPower(.2);
-    sleep(2000);
+    robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + 100);
+
+    robot.leftBack.setPower(-.3);
+
+    robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    while(robot.leftBack.isBusy())
+    {
+
+    }
+
+    robot.leftBack.setPower(0);
+
+    robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    sleep(1000);
     StopDriving();
 
 

@@ -42,6 +42,7 @@ public DcMotor leftBack = null;
 public DcMotor rightBack = null;
 public DcMotor leftDrive   = null;
 public DcMotor rightDrive  = null;
+public Servo Rightglock = null;
 /*public DcMotor pincher = null;
 public DcMotor lifter = null;
 public DcMotor lifter1 = null;
@@ -106,8 +107,8 @@ public void init(HardwareMap ahwMap) {
     //gyro = new GyroUnshafter(hwMap.get(ModernRoboticsI2cGyro.class, "gyro"));
   //  gyro = hwMap.get(ModernRoboticsI2cGyro.class, "gyro");
 
-    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-    rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+//    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//    rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
     motors[0] = rightDrive;
     motors[1] = leftDrive;
     motors[2] = leftBack;

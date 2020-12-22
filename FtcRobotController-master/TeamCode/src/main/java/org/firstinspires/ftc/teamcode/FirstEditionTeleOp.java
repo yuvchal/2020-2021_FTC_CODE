@@ -63,12 +63,12 @@ public void runOpMode() {
             robot.lifter.setPower(-.05);
         }*/
         if (gamepad1.dpad_left) {
-            robot.leftDrive.setPower(-.5);
+            robot.leftDrive.setPower(.5);
             robot.rightDrive.setPower(.5);
             robot.leftBack.setPower(-.5);
             robot.rightBack.setPower(-.5);
         } else if (gamepad1.dpad_right) {
-            robot.leftDrive.setPower(.5);
+            robot.leftDrive.setPower(-.5);
             robot.rightDrive.setPower(-.5);
             robot.leftBack.setPower(.5);
             robot.rightBack.setPower(.5);

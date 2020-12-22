@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Autonomous(name="RightDrive", group="BionicBot")
+@Disabled
 public class RobotRightDrive extends LinearOpMode
 {
 HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
