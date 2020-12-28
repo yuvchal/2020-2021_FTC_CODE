@@ -36,10 +36,29 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import java.util.List;
 
@@ -62,6 +81,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static int method;
+
 //    private static final String LABEL_ZERO_ELEMENT = "Zero";
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -133,8 +153,12 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.init(hardwareMap);
 
         waitForStart();
+       bottomBlueSquareLS();
 
-        if (opModeIsActive()) {
+
+        sleep(50000);
+
+        /* if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
 
@@ -151,42 +175,36 @@ public class WebCamBlueLeft extends LinearOpMode {
                                     recognition.getLeft(), recognition.getTop());
                             telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                     recognition.getRight(), recognition.getBottom());
-                            if(updatedRecognitions.size() == 0)
-                            {
 
-                                DriveForward(.1);
-                                sleep(100);
-                                StopDriving();
-                                break;
-                            }
-                            else if(recognition.getLabel().equals("Quad"))
-                            {
-
-                                DriveForward(.3);
-                                sleep(100);
-                                StopDriving();
-                                break;
-                            }
-                            else if(recognition.getLabel().equals("Single"))
-                            {
-                                DriveForward(.6);
-                                sleep(100);
-                                StopDriving();
-                                break;
-                            }
+//                            if(updatedRecognitions.size() == 0  )
+//                            {
+//
+//
+//                            }
+//                            else if(recognition.getLabel().equals("Quad"))
+//                            {
+//
+//
+//                                break;
+//                            }
+//                            else if(recognition.getLabel().equals("Single"))
+//                            {
+//                                DriveForward(.5,200);
+//                                StrafeLeft(.5,500);
+//                            }
                         }
                         telemetry.update();
                     }
                 }
             }
         }
-
+*/
         if (tfod != null) {
             tfod.shutdown();
         }
     }
 
-    /**
+    /*
      * Initialize the Vuforia localization engine.
      */
     private void initVuforia() {
@@ -215,48 +233,117 @@ public class WebCamBlueLeft extends LinearOpMode {
        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-    public void DriveForward(double power)
+    public void middleBlueSquareLS(){
+        UpLeft(.5,950);
+        DriveForward(.5,1200);
+        UpRight(.5,1800);
+        DownLeft(.5,1700);
+        DriveForward(.5,500);
+    }
+    public void middleRedSquareRS(){
+        UpRight(.5,950);
+        DriveForward(.5,1200);
+        UpLeft(.5,1800);
+        DownRight(.5,1700);
+        DriveForward(.5,500);
+    }
+    public void bottomBlueSquareLS(){
+        DriveForward(.5,300);
+        TurnLeft(.5,1000);
+       /* UpLeft(.5,950);
+        DriveForward(.5,1200);
+        UpRight(.5,1800);
+        DownLeft(.5,1700);
+        DriveForward(.5,500);*/
+    }
+    public void DriveForward(double power, int sleepTime)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(power);
         robot.rightBack.setPower(power);
         robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
     }
-    public void DriveBackward(double power)
+    public void DriveBackward(double power, int sleepTime)
     {
         robot.leftDrive.setPower(power);
         robot.rightDrive.setPower(-power);
         robot.rightBack.setPower(-power);
         robot.leftBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
     }
-    public void TurnLeft(double power)
+    public void TurnLeft(double power, int sleepTime)
     {
         robot.leftDrive.setPower(power);
         robot.rightDrive.setPower(power);
         robot.rightBack.setPower(power);
         robot.leftBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
     }
-    public void TurnRight(double power)
+    public void TurnRight(double power, int sleepTime)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(-power);
         robot.rightBack.setPower(-power);
         robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
     }
-    public void StrafeRight(double power)
+    public void StrafeRight(double power, int sleepTime)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(-power);
         robot.leftBack.setPower(power);
         robot.rightBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
     }
-    public void StrafeLeft(double power)
+    public void StrafeLeft(double power, int sleepTime)
     {
         robot.leftDrive.setPower(power);
         robot.rightDrive.setPower(power);
         robot.leftBack.setPower(-power);
         robot.rightBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
     }
+    public void DownLeft(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(0);
+        robot.leftBack.setPower(0);
+        robot.leftDrive.setPower(power);
+        robot.rightBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void DownRight(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(power);
+        robot.leftDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void UpLeft(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(power);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void UpRight(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(-power);
+        robot.rightBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+
+
 
     public void StopDriving()
     {
@@ -264,5 +351,6 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightDrive.setPower(0);
         robot.leftBack.setPower(0);
         robot.rightBack.setPower(0);
+        sleep(500);
     }
 }
