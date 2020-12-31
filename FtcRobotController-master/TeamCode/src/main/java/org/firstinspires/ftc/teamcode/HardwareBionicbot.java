@@ -42,7 +42,14 @@ public DcMotor leftBack = null;
 public DcMotor rightBack = null;
 public DcMotor leftDrive   = null;
 public DcMotor rightDrive  = null;
-public Servo Rightglock = null;
+public DcMotor intake  = null;
+public DcMotor leftShooter  = null;
+public DcMotor rightShooter  = null;
+public DcMotor wobblyJoint = null;
+public Servo wobblyClaw = null;
+public Servo planeCrosser = null;
+public Servo topSlider = null;
+public Servo bottomSlider = null;
 /*public DcMotor pincher = null;
 public DcMotor lifter = null;
 public DcMotor lifter1 = null;
@@ -80,6 +87,15 @@ public void init(HardwareMap ahwMap) {
     rightDrive = hwMap.get(DcMotor.class, "right_drive");
     leftBack = hwMap.get(DcMotor.class, "left_back");
     rightBack = hwMap.get(DcMotor.class, "right_back");
+    intake = hwMap.get(DcMotor.class, "intake");
+    leftShooter = hwMap.get(DcMotor.class, "left_shooter");
+    rightShooter = hwMap.get(DcMotor.class, "right_shooter");
+    wobblyJoint = hwMap.get(DcMotor.class, "wobbly_joint");
+    wobblyClaw = hwMap.get(Servo.class, "wobblyClaw");
+    planeCrosser = hwMap.get(Servo.class,"plane_servo");
+    topSlider = hwMap.get(Servo.class,"top_slider");
+    bottomSlider = hwMap.get(Servo.class,"bottom_slider");
+
     /*lifter = hwMap.get(DcMotor.class,"lifter");
     pincher = hwMap.get(DcMotor.class, "pincher");
     lifter1 = hwMap.get(DcMotor.class,"lifter1");
@@ -110,9 +126,10 @@ public void init(HardwareMap ahwMap) {
 //    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 //    rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
     motors[0] = rightDrive;
-    motors[1] = leftDrive;
-    motors[2] = leftBack;
-    motors[3] = rightBack;
+    motors[1] = rightBack;
+    motors[2] = leftDrive;
+    motors[3] = leftBack;
+
 
     //shaft1.setPower(0);
     //shaft1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

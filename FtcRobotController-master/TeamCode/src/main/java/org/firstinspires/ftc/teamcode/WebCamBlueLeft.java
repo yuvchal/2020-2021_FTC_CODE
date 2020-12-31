@@ -158,7 +158,7 @@ public class WebCamBlueLeft extends LinearOpMode {
 
         sleep(50000);
 
-        /* if (opModeIsActive()) {
+         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
 
@@ -167,6 +167,11 @@ public class WebCamBlueLeft extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if(updatedRecognitions.size() == 0){
+                            telemetry.addData("Zero Run", 1);
+                        }
+                        telemetry.update();
+
                         // step through the list of recognitions and display boundary info.
                         int i = 0;
                         for (Recognition recognition : updatedRecognitions) {
@@ -176,29 +181,24 @@ public class WebCamBlueLeft extends LinearOpMode {
                             telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                     recognition.getRight(), recognition.getBottom());
 
-//                            if(updatedRecognitions.size() == 0  )
-//                            {
-//
-//
-//                            }
-//                            else if(recognition.getLabel().equals("Quad"))
-//                            {
-//
-//
-//                                break;
-//                            }
-//                            else if(recognition.getLabel().equals("Single"))
-//                            {
-//                                DriveForward(.5,200);
-//                                StrafeLeft(.5,500);
-//                            }
+                            if(recognition.getLabel().equals("Quad"))
+                            {
+                                telemetry.addData("Zero Run", 2);
+
+                                break;
+                            }
+                            else if(recognition.getLabel().equals("Single"))
+                            {
+
+                                telemetry.addData("Zero Run", 3);
+                            }
                         }
                         telemetry.update();
                     }
                 }
             }
         }
-*/
+
         if (tfod != null) {
             tfod.shutdown();
         }
