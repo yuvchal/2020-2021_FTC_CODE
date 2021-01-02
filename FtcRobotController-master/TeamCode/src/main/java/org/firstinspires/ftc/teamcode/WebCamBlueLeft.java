@@ -81,6 +81,14 @@ public class WebCamBlueLeft extends LinearOpMode {
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static int method;
+    static final double     COUNTS_PER_MOTOR_REV    = 537.6  ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     CIRCUMFERENCE           = WHEEL_DIAMETER_INCHES * Math.PI;
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (CIRCUMFERENCE);
+    static final double     DRIVE_SPEED             = 0.6;
+    static final double     TURN_SPEED              = 0.5;
 
 //    private static final String LABEL_ZERO_ELEMENT = "Zero";
     /*
@@ -153,10 +161,9 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.init(hardwareMap);
 
         waitForStart();
-       bottomBlueSquareLS();
-
-
-        sleep(50000);
+//       bottomBlueSquareLS();
+       // Shoot(1,8000);
+        //sleep(50000);
 
          if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -169,28 +176,29 @@ public class WebCamBlueLeft extends LinearOpMode {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         if(updatedRecognitions.size() == 0){
                             telemetry.addData("Zero Run", 1);
+                            DriveForwardDistance(.2,2);
+                            StrafeLeftDistance(.5,1000);
                         }
                         telemetry.update();
 
                         // step through the list of recognitions and display boundary info.
                         int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
+                        if(updatedRecognitions.size() != 0) {
+                            for (Recognition recognition : updatedRecognitions) {
+                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        recognition.getLeft(), recognition.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        recognition.getRight(), recognition.getBottom());
 
-                            if(recognition.getLabel().equals("Quad"))
-                            {
-                                telemetry.addData("Zero Run", 2);
+                                if (recognition.getLabel().equals("Quad")) {
+                                    telemetry.addData("Zero Run", 2);
 
-                                break;
-                            }
-                            else if(recognition.getLabel().equals("Single"))
-                            {
+                                    break;
+                                } else if (recognition.getLabel().equals("Single")) {
 
-                                telemetry.addData("Zero Run", 3);
+                                    telemetry.addData("Zero Run", 3);
+                                }
                             }
                         }
                         telemetry.update();
@@ -234,114 +242,335 @@ public class WebCamBlueLeft extends LinearOpMode {
        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
     public void middleBlueSquareLS(){
-        UpLeft(.5,950);
-        DriveForward(.5,1200);
-        UpRight(.5,1800);
-        DownLeft(.5,1700);
-        DriveForward(.5,500);
     }
     public void middleRedSquareRS(){
-        UpRight(.5,950);
-        DriveForward(.5,1200);
-        UpLeft(.5,1800);
-        DownRight(.5,1700);
-        DriveForward(.5,500);
     }
     public void bottomBlueSquareLS(){
-        DriveForward(.5,300);
-        TurnLeft(.5,1000);
-       /* UpLeft(.5,950);
-        DriveForward(.5,1200);
-        UpRight(.5,1800);
-        DownLeft(.5,1700);
-        DriveForward(.5,500);*/
     }
-    public void DriveForward(double power, int sleepTime)
+    public void DriveForwardDistance(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DriveForward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void DriveBackwardDistance(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        DriveBackward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void TurnLeftDistance(double speed, int distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        TurnLeft(speed);
+
+
+        while( robot.rightDrive.isBusy() && robot.rightBack.isBusy() && robot.leftBack.isBusy() && robot.leftDrive.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void TurnRightDistance(double speed, int distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        TurnRight(speed);
+
+
+        while(robot.leftDrive.isBusy()  && robot.leftBack.isBusy() && robot.rightDrive.isBusy()  && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void StrafeLeftDistance(double speed, int distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+
+
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        StrafeLeft(speed);
+
+        while(robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() && robot.leftDrive.isBusy()) {
+
+        }
+
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void StrafeRightDistance(double speed, int distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+
+
+
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
+
+        StrafeRight(speed);
+
+
+        while(robot.leftDrive.isBusy() && robot.rightBack.isBusy() && robot.leftBack.isBusy() && robot.rightDrive.isBusy())
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void RightDiagonal(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition());
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition());
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DriveForward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void LeftDiagonal(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition());
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition());
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DriveForward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void DriveForward(double power)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(power);
         robot.rightBack.setPower(power);
         robot.leftBack.setPower(-power);
-        sleep(sleepTime);
-        StopDriving();
     }
-    public void DriveBackward(double power, int sleepTime)
-    {
-        robot.leftDrive.setPower(power);
-        robot.rightDrive.setPower(-power);
-        robot.rightBack.setPower(-power);
-        robot.leftBack.setPower(power);
-        sleep(sleepTime);
-        StopDriving();
-    }
-    public void TurnLeft(double power, int sleepTime)
-    {
-        robot.leftDrive.setPower(power);
-        robot.rightDrive.setPower(power);
-        robot.rightBack.setPower(power);
-        robot.leftBack.setPower(power);
-        sleep(sleepTime);
-        StopDriving();
-    }
-    public void TurnRight(double power, int sleepTime)
+    public void DriveBackward(double power)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(-power);
         robot.rightBack.setPower(-power);
         robot.leftBack.setPower(-power);
-        sleep(sleepTime);
-        StopDriving();
     }
-    public void StrafeRight(double power, int sleepTime)
+    public void TurnLeft(double power)
     {
         robot.leftDrive.setPower(-power);
-        robot.rightDrive.setPower(-power);
-        robot.leftBack.setPower(power);
+        robot.rightDrive.setPower(power);
         robot.rightBack.setPower(power);
-        sleep(sleepTime);
-        StopDriving();
-    }
-    public void StrafeLeft(double power, int sleepTime)
-    {
-        robot.leftDrive.setPower(power);
-        robot.rightDrive.setPower(power);
         robot.leftBack.setPower(-power);
-        robot.rightBack.setPower(-power);
-        sleep(sleepTime);
-        StopDriving();
     }
-    public void DownLeft(double power, int sleepTime)
+    public void TurnRight(double power)
     {
-        robot.rightDrive.setPower(0);
-        robot.leftBack.setPower(0);
         robot.leftDrive.setPower(power);
-        robot.rightBack.setPower(-power);
-        sleep(sleepTime);
-        StopDriving();
-    }
-    public void DownRight(double power, int sleepTime)
-    {
         robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(-power);
         robot.leftBack.setPower(power);
-        robot.leftDrive.setPower(0);
-        robot.rightBack.setPower(0);
-        sleep(sleepTime);
-        StopDriving();
     }
-    public void UpLeft(double power, int sleepTime)
-    {
-        robot.rightDrive.setPower(power);
-        robot.leftBack.setPower(-power);
-        sleep(sleepTime);
-        StopDriving();
-    }
-    public void UpRight(double power, int sleepTime)
+    public void StrafeLeft(double power)
     {
         robot.leftDrive.setPower(-power);
+        robot.rightDrive.setPower(power);
+        robot.leftBack.setPower(power);
+        robot.rightBack.setPower(-power);
+    }
+    public void StrafeRight(double power)
+    {
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(-power);
         robot.rightBack.setPower(power);
+    }
+
+    public void Shoot(double power, int sleepTime)
+    {
+        robot.leftShooter.setPower(1);
+        robot.rightShooter.setPower(-1);
+        robot.bottomSlider.setPower(1);
+        robot.topSlider.setPower(1);
         sleep(sleepTime);
+        robot.leftShooter.setPower(0);
+        robot.rightShooter.setPower(0);
+        robot.bottomSlider.setPower(0);
+        robot.topSlider.setPower(0);
         StopDriving();
     }
+
 
 
 

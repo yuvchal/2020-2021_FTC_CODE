@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Test Teleop", group="BionicBot")
@@ -98,35 +100,53 @@ public void runOpMode() {
             robot.leftBack.setPower(-gamepad1.right_trigger);
             robot.rightBack.setPower(gamepad1.right_trigger);
         }
-        
-//        if(gamepad1.right_bumper)
-//            robot.intake.setPower(1);
-//
-//        if(gamepad1.left_bumper)
-//            robot.intake.setPower(-1);
 
-        if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(-1);
-            robot.rightShooter.setPower(1);
-        }
-        else if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(gamepad2.left_trigger);
-            robot.rightShooter.setPower(-gamepad2.left_trigger);
-        }
+        if(gamepad1.right_bumper)
+            robot.intake.setPower(1);
+
+        if(gamepad1.left_bumper)
+            robot.intake.setPower(-1);
+
+        while(gamepad2.y)
+            robot.intake.setPower(1);
+
+        while(gamepad2.x)
+            robot.intake.setPower(-1);
 
         if(gamepad2.right_bumper) {
-            robot.topSlider.setDirection(Servo.Direction.REVERSE);
-            robot.topSlider.setDirection(Servo.Direction.FORWARD);
+            robot.bottomSlider.setPower(-1);
+            robot.topSlider.setPower(-1);
         }
+
+        if(gamepad2.left_bumper) {
+            robot.bottomSlider.setPower(1);
+            robot.topSlider.setPower(1);
+        }
+
+        while(gamepad2.left_trigger > 0) {
+            robot.leftShooter.setPower(-gamepad2.left_trigger);
+            robot.rightShooter.setPower(gamepad2.left_trigger);
+        }
+        while(gamepad2.right_trigger > 0) {
+            robot.leftShooter.setPower(gamepad2.right_trigger);
+            robot.rightShooter.setPower(-gamepad2.right_trigger);
+        }
+        if(gamepad2.dpad_up)
+            robot.wobblyJoint.setPower(-1);
+        if(gamepad2.dpad_down)
+            robot.wobblyClaw.setPosition(-0.8);
+        else
+            robot.wobblyClaw.setPosition(0);
+
 
 
 
         if (gamepad2.b){
-            robot.planeCrosser.setPosition(1);
+            robot.planeCrosser.setPosition(0.8);
         }
         else if (gamepad2.a)
         {
-            robot.planeCrosser.setPosition(0);
+            robot.planeCrosser.setPosition(-0.8);
         }
     }
 }

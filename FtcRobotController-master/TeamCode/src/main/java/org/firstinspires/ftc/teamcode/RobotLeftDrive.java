@@ -7,8 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@Autonomous(name="LeftDrive", group="BionicBot")
-@Disabled
+@Autonomous(name="TestAuto", group="BionicBot")
 public class RobotLeftDrive extends LinearOpMode
 {
 HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
@@ -31,15 +30,13 @@ public void runOpMode()
     telemetry.addData("Status", "Resetting Encoders");    //
     telemetry.update();
 
-       /* robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
-
     robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
 
     telemetry.addData("Path0",  "Starting at %7d :%7d",
             robot.leftDrive.getCurrentPosition(),
@@ -50,10 +47,14 @@ public void runOpMode()
 
     waitForStart();
 
-    robot.leftDrive.setPower(.2);
-    sleep(2000);
-    StopDriving();
-
+   // RightDiagonal(.4,10);
+    //LeftDiagonal(.4,10);
+    robot.wobblyClaw.setPosition(-1);
+    sleep(500);
+    robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+    sleep(750);
+    robot.wobblyJoint.setPower(-.2);
+    sleep(5000);
 
 }
 public void DriveForwardDistance(double speed, double distanceInches)
@@ -66,9 +67,9 @@ public void DriveForwardDistance(double speed, double distanceInches)
     robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
 
     robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -97,9 +98,9 @@ public void DriveBackwardDistance(double speed, double distanceInches)
     robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
 
     robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -129,8 +130,8 @@ public void TurnLeftDistance(double speed, int distanceInches)
 
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
 
     robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -159,8 +160,8 @@ public void TurnRightDistance(double speed, int distanceInches)
     robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
 
@@ -195,9 +196,9 @@ public void StrafLeftDistance(double speed, int distanceInches)
 
 
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() - distanceTick);
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
 
 
     robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -231,9 +232,9 @@ public void StrafRightDistance(double speed, int distanceInches)
 
 
     robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
-    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() + distanceTick);
+    robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
     robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() - distanceTick);
-    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+    robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() + distanceTick);
 
 
 
@@ -258,12 +259,77 @@ public void StrafRightDistance(double speed, int distanceInches)
     robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 }
+    public void RightDiagonal(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition());
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition() + distanceTick);
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition() - distanceTick);
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition());
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DriveForward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void LeftDiagonal(double speed, double distanceInches)
+    {
+        double rotationsneeded = distanceInches/CIRCUMFERENCE;
+        int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftDrive.setTargetPosition(robot.leftDrive.getCurrentPosition() - distanceTick);
+        robot.rightDrive.setTargetPosition(robot.rightDrive.getCurrentPosition());
+        robot.leftBack.setTargetPosition(robot.leftBack.getCurrentPosition());
+        robot.rightBack.setTargetPosition(robot.rightBack.getCurrentPosition() + distanceTick);
+
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DriveForward(speed);
+
+        while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
+        {
+
+        }
+        StopDriving();
+        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
 public void DriveForward(double power)
 {
-    robot.leftDrive.setPower(power);
+    robot.leftDrive.setPower(-power);
     robot.rightDrive.setPower(power);
     robot.rightBack.setPower(power);
-    robot.leftBack.setPower(power);
+    robot.leftBack.setPower(-power);
 }
 public void DriveBackward(double power)
 {
