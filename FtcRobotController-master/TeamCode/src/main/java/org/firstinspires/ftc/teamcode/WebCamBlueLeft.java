@@ -80,7 +80,6 @@ public class WebCamBlueLeft extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
-    private static int method;
     static final double     COUNTS_PER_MOTOR_REV    = 537.6  ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
@@ -90,7 +89,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
-//    private static final String LABEL_ZERO_ELEMENT = "Zero";
+    //    private static final String LABEL_ZERO_ELEMENT = "Zero";
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -148,24 +147,24 @@ public class WebCamBlueLeft extends LinearOpMode {
         telemetry.update();
 
 
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        // step through the list of recognitions and display boundary info.
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                // step through the list of recognitions and display boundary info.
 
-                    }
-                }telemetry.update();
+            }
+        }telemetry.update();
         robot.init(hardwareMap);
 
         waitForStart();
 //       bottomBlueSquareLS();
-       // Shoot(1,8000);
+        //Shoot(1,8000);
         //sleep(50000);
 
-         if (opModeIsActive()) {
+        if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
 
@@ -176,8 +175,8 @@ public class WebCamBlueLeft extends LinearOpMode {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         if(updatedRecognitions.size() == 0){
                             telemetry.addData("Zero Run", 1);
-                            DriveForwardDistance(.2,2);
-                            StrafeLeftDistance(.5,1000);
+                            ZeroLocation();
+
                         }
                         telemetry.update();
 
@@ -193,11 +192,13 @@ public class WebCamBlueLeft extends LinearOpMode {
 
                                 if (recognition.getLabel().equals("Quad")) {
                                     telemetry.addData("Zero Run", 2);
+                                    QuadLocation();
 
                                     break;
                                 } else if (recognition.getLabel().equals("Single")) {
 
                                     telemetry.addData("Zero Run", 3);
+                                    SingleLocation();
                                 }
                             }
                         }
@@ -235,17 +236,77 @@ public class WebCamBlueLeft extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-       tfodParameters.minResultConfidence = 0.8f;
-       tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-    public void middleBlueSquareLS(){
+
+
+    public void ZeroLocation()
+    {
+        robot.wobblyClaw.setPosition(-1);
+        DriveForwardDistance(.5,12);
+        TurnLeftDistance(.5,48);
+        StrafeRightDistance(.5,15);
+        DriveBackwardDistance(.5,80);
+        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+        sleep(2000);
+        robot.wobblyClaw.setPosition(1);
+        sleep(1000);
+        robot.wobblyJoint.setPower(-1);
+        sleep(100);
+        robot.wobblyJoint.setPower(0);
+        //nigga
+        DriveBackwardDistance(.5,10);
+        StrafeLeftDistance(.5,48);
+        DriveForwardDistance(.5,43);
+        Shoot(1,6000);
+        DriveBackwardDistance(.5,15);
+        sleep(5000);
+        sleep(10000000);
     }
-    public void middleRedSquareRS(){
+    public void SingleLocation()
+    {
+        robot.wobblyClaw.setPosition(-1);
+        DriveForwardDistance(.5,12);
+        StrafeLeftDistance(.5,12);
+        DriveForwardDistance(.5,68);
+        StrafeRightDistance(.5,20);
+        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+        sleep(2000);
+        robot.wobblyClaw.setPosition(1);
+        sleep(1000);
+        robot.wobblyJoint.setPower(-1);
+        sleep(100);
+        robot.wobblyJoint.setPower(0);
+        DriveBackwardDistance(.5,22);
+        TurnLeftDistance(.5,48);
+        StrafeLeftDistance(.5,25);
+        Shoot(1,6000);
+        DriveBackwardDistance(.5,10);
+        sleep(100000000);
     }
-    public void bottomBlueSquareLS(){
+    public void QuadLocation()
+    {
+        robot.wobblyClaw.setPosition(-1);
+        DriveForwardDistance(.5,12);
+        StrafeLeftDistance(.5,12);
+        DriveForwardDistance(.5,92);
+        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+        sleep(2000);
+        robot.wobblyClaw.setPosition(1);
+        sleep(1000);
+        robot.wobblyJoint.setPower(-1);
+        sleep(100);
+        robot.wobblyJoint.setPower(0);
+        DriveBackwardDistance(.5,46);
+        TurnLeftDistance(.5,48);
+        StrafeLeftDistance(.5,45);
+        Shoot(1,6000);
+        DriveBackwardDistance(.5,15);
+        sleep(100000000);
     }
     public void DriveForwardDistance(double speed, double distanceInches)
     {

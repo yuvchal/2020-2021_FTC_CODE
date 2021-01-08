@@ -47,7 +47,6 @@ public DcMotor leftShooter  = null;
 public DcMotor rightShooter  = null;
 public DcMotor wobblyJoint = null;
 public Servo wobblyClaw = null;
-public Servo planeCrosser = null;
 public CRServo topSlider = null;
 public CRServo bottomSlider = null;
 /*public DcMotor pincher = null;
@@ -92,7 +91,6 @@ public void init(HardwareMap ahwMap) {
     rightShooter = hwMap.get(DcMotor.class, "right_shooter");
     wobblyJoint = hwMap.get(DcMotor.class, "wobbly_joint");
     wobblyClaw = hwMap.get(Servo.class, "wobbly_claw");
-    planeCrosser = hwMap.get(Servo.class,"plane_servo");
     topSlider = hwMap.get(CRServo.class,"top_slider");
     bottomSlider = hwMap.get(CRServo.class,"bottom_slider");
 
