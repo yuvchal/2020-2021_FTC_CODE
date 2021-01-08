@@ -258,7 +258,7 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.wobblyJoint.setPower(-1);
         sleep(100);
         robot.wobblyJoint.setPower(0);
-        //nigga
+        robot.wobblyJoint.setPower(0);
         DriveBackwardDistance(.5,10);
         StrafeLeftDistance(.5,48);
         DriveForwardDistance(.5,43);
