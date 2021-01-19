@@ -121,8 +121,7 @@ public void init(HardwareMap ahwMap) {
     //gyro = new GyroUnshafter(hwMap.get(ModernRoboticsI2cGyro.class, "gyro"));
   //  gyro = hwMap.get(ModernRoboticsI2cGyro.class, "gyro");
 
-//    rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-//    rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
     motors[0] = rightDrive;
     motors[1] = rightBack;
     motors[2] = leftDrive;

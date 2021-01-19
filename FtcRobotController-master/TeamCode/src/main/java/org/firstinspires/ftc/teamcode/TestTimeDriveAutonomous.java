@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @Autonomous(name="TestTimeDriveAutonomous", group="BionicBot")
-@Disabled
+
 public class TestTimeDriveAutonomous extends LinearOpMode
 {
     HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
@@ -50,9 +50,15 @@ public class TestTimeDriveAutonomous extends LinearOpMode
 
         waitForStart();
 
-        DriveForward(.3);
-        sleep(2000);
-        StopDriving();
+        robot.wobblyClaw.setPosition(-1);
+        sleep(1000);
+        robot.wobblyJoint.setPower(-1);
+        sleep(800);
+        robot.wobblyJoint.setPower(0);
+        robot.wobblyJoint.setPower(.5);
+        sleep(500);
+        robot.wobblyJoint.setPower(0);
+
 
 
     }

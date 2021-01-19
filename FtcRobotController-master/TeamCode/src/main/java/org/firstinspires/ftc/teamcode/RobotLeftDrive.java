@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 @Autonomous(name="TestAuto", group="BionicBot")
@@ -21,10 +27,19 @@ static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_
         (CIRCUMFERENCE);
 static final double     DRIVE_SPEED             = 0.6;
 static final double     TURN_SPEED              = 0.5;
+    Orientation angles;
+    BNO055IMU imu;
+
 @Override
 public void runOpMode()
 {
     robot.init(hardwareMap);
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+    parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+
+    imu = hardwareMap.get(BNO055IMU.class, "imu");
+    imu.initialize(parameters);
 
     // Send telemetry message to signify robot waiting;
     telemetry.addData("Status", "Resetting Encoders");    //
@@ -34,7 +49,7 @@ public void runOpMode()
     robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+    robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
@@ -47,15 +62,20 @@ public void runOpMode()
 
     waitForStart();
 
+    while(opModeIsActive() && !isStopRequested()){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Heading: ", angles.firstAngle);
+        telemetry.addData("Roll: ", angles.secondAngle);
+        telemetry.addData("Pitch: ", angles.thirdAngle);
+        telemetry.update();
+    }
+
    // RightDiagonal(.4,10);
     //LeftDiagonal(.4,10);
-    robot.wobblyClaw.setPosition(-1);
-    sleep(500);
-    robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
-    sleep(750);
-    robot.wobblyJoint.setPower(-.2);
-    sleep(5000);
 
+    robot.wobblyClaw.setPosition(-1);
+    robot.wobblyJoint.setPower(-1);
+    sleep(3000);
 }
 public void DriveForwardDistance(double speed, double distanceInches)
 {
@@ -322,6 +342,25 @@ public void StrafRightDistance(double speed, int distanceInches)
         robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void revHex(double power, int tick)
+    {
+        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - tick);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.wobblyJoint.setPower(power);
+
+        while(robot.wobblyJoint.isBusy())
+        {
+
+        }
+        robot.wobblyJoint.setPower(0);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
 public void DriveForward(double power)

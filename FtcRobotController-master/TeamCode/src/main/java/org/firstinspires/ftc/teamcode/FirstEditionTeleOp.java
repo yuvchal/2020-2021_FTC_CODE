@@ -18,6 +18,8 @@ public void runOpMode() {
     waitForStart();
 
     while (opModeIsActive()) {
+
+
         double turn = gamepad1.right_stick_x;
         double lateral = gamepad1.left_stick_x;
         double forward = gamepad1.left_stick_y;
@@ -47,12 +49,25 @@ public void runOpMode() {
             robot.leftBack.setPower(.5);
             robot.rightBack.setPower(.5);
         } else {
-            robot.leftDrive.setPower(-leftDrive);
-            robot.rightDrive.setPower(-rightDrive);
-            robot.rightBack.setPower(rightBack);
-            robot.leftBack.setPower(-leftBack);
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+            robot.rightBack.setPower(0);
+            robot.leftBack.setPower(0);
         }
-
+        if(gamepad1.right_stick_x > 0)
+        {
+            robot.leftDrive.setPower(gamepad1.right_stick_x);
+            robot.rightDrive.setPower(gamepad1.right_stick_x);
+            robot.rightBack.setPower(gamepad1.right_stick_x);
+            robot.leftBack.setPower(gamepad1.right_stick_x);
+        }
+        else if(gamepad1.right_stick_x < 0)
+        {
+            robot.leftDrive.setPower(gamepad1.right_stick_x);
+            robot.rightDrive.setPower(gamepad1.right_stick_x);
+            robot.rightBack.setPower(gamepad1.right_stick_x);
+            robot.leftBack.setPower(gamepad1.right_stick_x);
+        }
         if (gamepad1.left_trigger > 0)
         {
             robot.leftDrive.setPower(gamepad1.left_trigger);
@@ -98,24 +113,26 @@ public void runOpMode() {
 
 
         if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(-gamepad2.left_trigger);
-            robot.rightShooter.setPower(gamepad2.left_trigger);
+            robot.leftShooter.setPower(-gamepad2.left_trigger/2);
+            robot.rightShooter.setPower(gamepad2.left_trigger/2);
         }
         else if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(gamepad2.right_trigger);
-            robot.rightShooter.setPower(-gamepad2.right_trigger);
+            robot.leftShooter.setPower(.48);
+            robot.rightShooter.setPower(-.48);
         }
         else {
             robot.leftShooter.setPower(0);
             robot.rightShooter.setPower(0);
         }
-        if(gamepad2.dpad_up)
+        if(gamepad2.dpad_left)
+            robot.wobblyJoint.setPower(1);
+        else if(gamepad2.dpad_right)
             robot.wobblyJoint.setPower(-1);
-        else if(gamepad2.dpad_down)
-            robot.wobblyClaw.setPosition(-0.8);
-        else
-            robot.wobblyClaw.setPosition(0);
+        if(gamepad2.a)
+            robot.wobblyClaw.setPosition(1);
+        else if(gamepad2.b)
+            robot.wobblyClaw.setPosition(-1);
+        }
 
-    }
 }
 }

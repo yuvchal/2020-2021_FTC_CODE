@@ -159,6 +159,7 @@ public class WebCamRedRight extends LinearOpMode {
         }telemetry.update();
         robot.init(hardwareMap);
 
+        robot.wobblyClaw.setPosition(-1);
         waitForStart();
 //       bottomBlueSquareLS();
         //Shoot(1,8000);
@@ -242,46 +243,54 @@ public class WebCamRedRight extends LinearOpMode {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
+
+
     public void ZeroLocation()
     {
         robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
-        TurnRightDistance(.5,48);
-        StrafeLeftDistance(.5,12);
+        TurnRightDistance(.5,48.5);
+        StrafeLeftDistance(.5,15);
         DriveBackwardDistance(.5,80);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
-        sleep(2000);
-        robot.wobblyClaw.setPosition(1);
+        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
+        sleep(800);
+        robot.wobblyClaw.setPosition(.8);
         sleep(1000);
-        robot.wobblyJoint.setPower(-1);
+        robot.wobblyJoint.setPower(.5);
         sleep(100);
         robot.wobblyJoint.setPower(0);
         DriveBackwardDistance(.5,10);
-        StrafeRightDistance(.5,45);
-        DriveForwardDistance(.5,43);
-        Shoot(1,6000);
+        StrafeRightDistance(.5,27);
+        DriveForwardDistance(.5,46);
+        robot.leftShooter.setPower(.45);
+        robot.rightShooter.setPower(-.45);
+        sleep((1000));
+        Shoot(.45,7500);
         DriveBackwardDistance(.5,15);
         sleep(5000);
         sleep(10000000);
     }
+    //For Single Location, .45 is the power that is good for now
     public void SingleLocation()
     {
         robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
         StrafeRightDistance(.5,12);
         DriveForwardDistance(.5,68);
-        StrafeLeftDistance(.5,20);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
-        sleep(2000);
-        robot.wobblyClaw.setPosition(1);
+        StrafeLeftDistance(.5,21);
+        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
+        sleep(800);
+        robot.wobblyClaw.setPosition(.8);
         sleep(1000);
-        robot.wobblyJoint.setPower(-1);
+        robot.wobblyJoint.setPower(.5);
         sleep(100);
         robot.wobblyJoint.setPower(0);
-        DriveBackwardDistance(.5,22);
+        DriveBackwardDistance(.5,21);
         TurnRightDistance(.5,48);
-        StrafeRightDistance(.5,25);
-        Shoot(1,6000);
+        robot.leftShooter.setPower(.45);
+        robot.rightShooter.setPower(-.45);
+        sleep(1000);
+        Shoot(.45,7300);
         DriveBackwardDistance(.5,10);
         sleep(100000000);
     }
@@ -289,19 +298,22 @@ public class WebCamRedRight extends LinearOpMode {
     {
         robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
-        StrafeRightDistance(.5,12);
+        StrafeRightDistance(.5,14);
         DriveForwardDistance(.5,92);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
-        sleep(2000);
-        robot.wobblyClaw.setPosition(1);
+        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
+        sleep(800);
+        robot.wobblyClaw.setPosition(.8);
         sleep(1000);
-        robot.wobblyJoint.setPower(-1);
+        robot.wobblyJoint.setPower(.5);
         sleep(100);
         robot.wobblyJoint.setPower(0);
         DriveBackwardDistance(.5,46);
+        StrafeLeftDistance(.5,23);
         TurnRightDistance(.5,48);
-        StrafeRightDistance(.5,45);
-        Shoot(1,6000);
+        robot.leftShooter.setPower(.45);
+        robot.rightShooter.setPower(-.45);
+        sleep(1000);
+        Shoot(.45,8000);
         DriveBackwardDistance(.5,15);
         sleep(100000000);
     }
@@ -367,7 +379,7 @@ public class WebCamRedRight extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void TurnLeftDistance(double speed, int distanceInches)
+    public void TurnLeftDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -399,7 +411,7 @@ public class WebCamRedRight extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void TurnRightDistance(double speed, int distanceInches)
+    public void TurnRightDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -431,7 +443,7 @@ public class WebCamRedRight extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void StrafeLeftDistance(double speed, int distanceInches)
+    public void StrafeLeftDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -467,7 +479,7 @@ public class WebCamRedRight extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void StrafeRightDistance(double speed, int distanceInches)
+    public void StrafeRightDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -571,6 +583,25 @@ public class WebCamRedRight extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void revHex(double power, int tick)
+    {
+        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - tick);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.wobblyJoint.setPower(power);
+
+        while(robot.wobblyJoint.isBusy())
+        {
+
+        }
+        robot.wobblyJoint.setPower(0);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
     public void DriveForward(double power)
     {
         robot.leftDrive.setPower(-power);
@@ -580,51 +611,44 @@ public class WebCamRedRight extends LinearOpMode {
     }
     public void DriveBackward(double power)
     {
-        robot.leftDrive.setPower(power);
+        robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(-power);
         robot.rightBack.setPower(-power);
-        robot.leftBack.setPower(power);
+        robot.leftBack.setPower(-power);
     }
     public void TurnLeft(double power)
     {
-        robot.leftDrive.setPower(power);
+        robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(power);
         robot.rightBack.setPower(power);
-        robot.leftBack.setPower(power);
+        robot.leftBack.setPower(-power);
     }
     public void TurnRight(double power)
     {
-        robot.leftDrive.setPower(-power);
+        robot.leftDrive.setPower(power);
         robot.rightDrive.setPower(-power);
         robot.rightBack.setPower(-power);
-        robot.leftBack.setPower(-power);
-    }
-    public void StrafeRight(double power)
-    {
-        robot.leftDrive.setPower(-power);
-        robot.rightDrive.setPower(-power);
         robot.leftBack.setPower(power);
-        robot.rightBack.setPower(power);
     }
     public void StrafeLeft(double power)
     {
-        robot.leftDrive.setPower(power);
+        robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(power);
-        robot.leftBack.setPower(-power);
+        robot.leftBack.setPower(power);
         robot.rightBack.setPower(-power);
     }
-
-    public void StopDriving()
+    public void StrafeRight(double power)
     {
-        robot.leftDrive.setPower(0);
-        robot.rightDrive.setPower(0);
-        robot.leftBack.setPower(0);
-        robot.rightBack.setPower(0);
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(-power);
+        robot.rightBack.setPower(power);
     }
+
     public void Shoot(double power, int sleepTime)
     {
-        robot.leftShooter.setPower(1);
-        robot.rightShooter.setPower(-1);
+        robot.leftShooter.setPower(power);
+        robot.rightShooter.setPower(-power);
         robot.bottomSlider.setPower(1);
         robot.topSlider.setPower(1);
         sleep(sleepTime);
@@ -633,5 +657,17 @@ public class WebCamRedRight extends LinearOpMode {
         robot.bottomSlider.setPower(0);
         robot.topSlider.setPower(0);
         StopDriving();
+    }
+
+
+
+
+    public void StopDriving()
+    {
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.leftBack.setPower(0);
+        robot.rightBack.setPower(0);
+        sleep(500);
     }
 }
