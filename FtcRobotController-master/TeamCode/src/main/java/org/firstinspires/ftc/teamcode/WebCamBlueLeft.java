@@ -73,6 +73,7 @@ import java.util.List;
  * is explained below.
  */
 @Autonomous(name = "BlueLeft", group = "BionicBot")
+@Disabled
 public class WebCamBlueLeft extends LinearOpMode {
     HardwareBionicbot robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();

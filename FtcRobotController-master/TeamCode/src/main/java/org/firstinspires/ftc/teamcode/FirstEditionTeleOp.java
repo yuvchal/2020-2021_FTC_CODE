@@ -54,19 +54,19 @@ public void runOpMode() {
             robot.rightBack.setPower(0);
             robot.leftBack.setPower(0);
         }
-        if(gamepad1.right_stick_x > 0)
+        if(gamepad1.right_stick_x < 0)
         {
-            robot.leftDrive.setPower(gamepad1.right_stick_x);
-            robot.rightDrive.setPower(gamepad1.right_stick_x);
-            robot.rightBack.setPower(gamepad1.right_stick_x);
-            robot.leftBack.setPower(gamepad1.right_stick_x);
+            robot.leftDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightBack.setPower(-gamepad1.right_stick_x);
+            robot.leftBack.setPower(-gamepad1.right_stick_x);
         }
-        else if(gamepad1.right_stick_x < 0)
+        else if(gamepad1.right_stick_x > 0)
         {
-            robot.leftDrive.setPower(gamepad1.right_stick_x);
-            robot.rightDrive.setPower(gamepad1.right_stick_x);
-            robot.rightBack.setPower(gamepad1.right_stick_x);
-            robot.leftBack.setPower(gamepad1.right_stick_x);
+            robot.leftDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightBack.setPower(-gamepad1.right_stick_x);
+            robot.leftBack.setPower(-gamepad1.right_stick_x);
         }
         if (gamepad1.left_trigger > 0)
         {
@@ -113,12 +113,12 @@ public void runOpMode() {
 
 
         if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(-gamepad2.left_trigger/2);
-            robot.rightShooter.setPower(gamepad2.left_trigger/2);
+            robot.leftShooter.setPower(.447);
+            robot.rightShooter.setPower(-.447);
         }
         else if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(.48);
-            robot.rightShooter.setPower(-.48);
+            robot.leftShooter.setPower(.438);
+            robot.rightShooter.setPower(-.438);
         }
         else {
             robot.leftShooter.setPower(0);
