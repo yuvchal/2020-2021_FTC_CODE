@@ -113,12 +113,12 @@ public void runOpMode() {
 
 
         if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(.447);
-            robot.rightShooter.setPower(-.447);
+            robot.leftShooter.setPower(.45);
+            robot.rightShooter.setPower(-.45);
         }
         else if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(.438);
-            robot.rightShooter.setPower(-.438);
+            robot.leftShooter.setPower(.42);
+            robot.rightShooter.setPower(-.42);
         }
         else {
             robot.leftShooter.setPower(0);
