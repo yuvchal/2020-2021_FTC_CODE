@@ -54,7 +54,7 @@ import java.util.List;
  */
 @Autonomous(name = "WebcamTester", group = "BionicBot")
 public class WebCamTester extends LinearOpMode {
-    HardwareBionicbot robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
+   // HardwareBionicbot robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
     private static int diskLevel = 0;
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -138,7 +138,7 @@ public class WebCamTester extends LinearOpMode {
 
                     }
                 }telemetry.update();
-        robot.init(hardwareMap);
+        //robot.init(hardwareMap);
 
         waitForStart();
 //       bottomBlueSquareLS();
@@ -229,20 +229,20 @@ public class WebCamTester extends LinearOpMode {
     }
     public void bottomBlueSquareLS(){
     }
-    public void ZeroLocation()
+   /* public void ZeroLocation()
     {
-        robot.wobblyClaw.setPosition(-1);
+       // robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
         TurnLeftDistance(.5,48);
         StrafeRightDistance(.5,12);
         DriveBackwardDistance(.5,80);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+       // robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
         sleep(2000);
-        robot.wobblyClaw.setPosition(1);
+       // robot.wobblyClaw.setPosition(1);
         sleep(1000);
-        robot.wobblyJoint.setPower(-1);
+       // robot.wobblyJoint.setPower(-1);
         sleep(100);
-        robot.wobblyJoint.setPower(0);
+        //robot.wobblyJoint.setPower(0);
         DriveBackwardDistance(.5,10);
         StrafeLeftDistance(.5,45);
         DriveForwardDistance(.5,43);
@@ -253,18 +253,18 @@ public class WebCamTester extends LinearOpMode {
     }
     public void SingleLocation()
     {
-        robot.wobblyClaw.setPosition(-1);
+       // robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
         StrafeLeftDistance(.5,12);
         DriveForwardDistance(.5,68);
         StrafeRightDistance(.5,20);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+       // robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
         sleep(2000);
-        robot.wobblyClaw.setPosition(1);
+        //robot.wobblyClaw.setPosition(1);
         sleep(1000);
-        robot.wobblyJoint.setPower(-1);
+      //  robot.wobblyJoint.setPower(-1);
         sleep(100);
-        robot.wobblyJoint.setPower(0);
+        //robot.wobblyJoint.setPower(0);
         DriveBackwardDistance(.5,22);
         TurnLeftDistance(.5,48);
         StrafeLeftDistance(.5,25);
@@ -274,11 +274,11 @@ public class WebCamTester extends LinearOpMode {
     }
     public void QuadLocation()
     {
-        robot.wobblyClaw.setPosition(-1);
+      //  robot.wobblyClaw.setPosition(-1);
         DriveForwardDistance(.5,12);
         StrafeLeftDistance(.5,12);
         DriveForwardDistance(.5,92);
-        robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
+      //  robot.wobblyJoint.setPower(0.8);     //positive power make the claw go up from the robot side
         sleep(2000);
         robot.wobblyClaw.setPosition(1);
         sleep(1000);
@@ -626,5 +626,5 @@ public class WebCamTester extends LinearOpMode {
         robot.leftBack.setPower(0);
         robot.rightBack.setPower(0);
         sleep(500);
-    }
+    }*/
 }

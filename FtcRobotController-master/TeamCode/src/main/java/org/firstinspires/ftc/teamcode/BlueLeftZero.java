@@ -51,20 +51,15 @@ public void runOpMode()
     TurnLeftDistance(.5,48.5);
     StrafeRightDistance(.5,15);
     DriveBackwardDistance(.5,80);
-    robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
-    sleep(800);
+    wobblyJoint(.2,-600);
     robot.wobblyClaw.setPosition(.8);
-    sleep(1000);
-    robot.wobblyJoint.setPower(.5);
-    sleep(100);
-    robot.wobblyJoint.setPower(0);
     DriveBackwardDistance(.5,10);
     StrafeLeftDistance(.5,27);
     DriveForwardDistance(.5,46);
-    robot.leftShooter.setPower(.45);
-    robot.rightShooter.setPower(-.45);
+    robot.leftShooter.setPower(.436);
+    robot.rightShooter.setPower(-.436);
     sleep((1000));
-    Shoot(.45,10500);
+    Shoot(.4305,11500);
     DriveBackwardDistance(.5,15);
     sleep(5000);
     sleep(10000000);
@@ -347,6 +342,22 @@ public void StrafeRightDistance(double speed, int distanceInches)
         robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void wobblyJoint(double power, int tick)
+    {
+        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + tick);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.wobblyJoint.setPower(power);
+
+        while (robot.wobblyJoint.isBusy())
+        {
+
+        }
+        robot.wobblyJoint.setPower(0);
     }
 
 public void DriveForward(double power)

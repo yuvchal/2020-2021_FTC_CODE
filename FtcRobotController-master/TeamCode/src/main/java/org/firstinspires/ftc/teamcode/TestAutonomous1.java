@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,7 +12,7 @@ public class TestAutonomous1 extends LinearOpMode
     HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1200  ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 537.6  ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     CIRCUMFERENCE           = WHEEL_DIAMETER_INCHES * Math.PI;
@@ -32,11 +33,17 @@ public class TestAutonomous1 extends LinearOpMode
         robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+//        robot.BackColorSensor.enableLed(true);
+//        robot.FrontColorSensor.enableLed(true);
 
 
         waitForStart();
-        robot.wobblyJoint.setPower(1);
-        sleep(1000);
+
+//        telemetry.addData("Color Number of Left Color Sensor: ", robot.FrontColorSensor.readUnsignedByte((ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER)));
+
     }
     public void DriveForwardDistance(double speed, double distanceInches)
     {
@@ -304,6 +311,22 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void wobblyJoint(double power, int tick)
+    {
+        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + tick);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.wobblyJoint.setPower(power);
+
+        while (robot.wobblyJoint.isBusy())
+        {
+
+        }
+        robot.wobblyJoint.setPower(0);
+    }
     public void revHex(double power, int tick)
     {
         robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -316,6 +339,7 @@ public class TestAutonomous1 extends LinearOpMode
 
         while(robot.wobblyJoint.isBusy())
         {
+            robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         }
         robot.wobblyJoint.setPower(0);

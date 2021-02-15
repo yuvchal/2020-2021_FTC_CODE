@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,17 +8,36 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 @TeleOp(name="Test Teleop", group="BionicBot")
 public class FirstEditionTeleOp extends LinearOpMode {
 
 
 HardwareBionicbot robot = new HardwareBionicbot();
+    BNO055IMU imu;
+
+    Orientation angles;
+    Orientation newAngles;
 
 public void runOpMode() {
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+    imu = hardwareMap.get(BNO055IMU.class,"imu");
+    imu.initialize(parameters);
+
     robot.init(hardwareMap);
     waitForStart();
 
     while (opModeIsActive()) {
+
+        getDateImu();
+        alignGyro();
+        //shootAlignGyro();
+        shoot2AlignGyro();
 
 
         double turn = gamepad1.right_stick_x;
@@ -113,26 +133,241 @@ public void runOpMode() {
 
 
         if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(.45);
-            robot.rightShooter.setPower(-.45);
+            robot.leftShooter.setPower(1);
+            robot.rightShooter.setPower(-1);
         }
         else if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(.42);
-            robot.rightShooter.setPower(-.42);
+            robot.leftShooter.setPower(1);
+            robot.rightShooter.setPower(-1);
         }
         else {
             robot.leftShooter.setPower(0);
             robot.rightShooter.setPower(0);
         }
         if(gamepad2.dpad_left)
-            robot.wobblyJoint.setPower(1);
+            robot.wobblyJoint.setPower(.5);
         else if(gamepad2.dpad_right)
-            robot.wobblyJoint.setPower(-1);
+            robot.wobblyJoint.setPower(-.5);
+        else
+            robot.wobblyJoint.setPower(0);
         if(gamepad2.a)
             robot.wobblyClaw.setPosition(1);
         else if(gamepad2.b)
             robot.wobblyClaw.setPosition(-1);
         }
 
+
 }
+    public void getDateImu()
+    {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Heading", angles.firstAngle);
+        telemetry.addData("Roll", angles.secondAngle);
+        telemetry.addData("Pitch",angles.thirdAngle);
+        telemetry.update();
+    }
+    public void GyroLeft()
+    {
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 90) {
+            newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 25){
+                robot.leftDrive.setPower(1);
+                robot.rightDrive.setPower(1);
+                robot.rightBack.setPower(1);
+                robot.leftBack.setPower(1);
+            }
+            else{
+                robot.leftDrive.setPower(0.2);
+                robot.rightDrive.setPower(0.2);
+                robot.rightBack.setPower(0.2);
+                robot.leftBack.setPower(0.2);
+            }
+            telemetry.addData("Heading", newAngles.firstAngle);
+            telemetry.addData("Roll", newAngles.secondAngle);
+            telemetry.addData("Pitch",newAngles.thirdAngle);
+            telemetry.update();
+        }
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftBack.setPower(0);
+    }
+    public void GyroRight()
+    {
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -90) {
+            newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -25){
+                robot.leftDrive.setPower(-1);
+                robot.rightDrive.setPower(-1);
+                robot.rightBack.setPower(-1);
+                robot.leftBack.setPower(-1);
+            }
+            else{
+                robot.leftDrive.setPower(-0.2);
+                robot.rightDrive.setPower(-0.2);
+                robot.rightBack.setPower(-0.2);
+                robot.leftBack.setPower(-0.2);
+            }
+            telemetry.addData("Heading", newAngles.firstAngle);
+            telemetry.addData("Roll", newAngles.secondAngle);
+            telemetry.addData("Pitch",newAngles.thirdAngle);
+            telemetry.update();
+        }
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftBack.setPower(0);
+    }
+    public void shootAlignGyro()
+    {
+        while(gamepad1.b)
+        {
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0) {
+                newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+
+                if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 25){
+                    robot.leftDrive.setPower(-1);
+                    robot.rightDrive.setPower(-1);
+                    robot.rightBack.setPower(-1);
+                    robot.leftBack.setPower(-1);
+                }
+                else
+                {
+                    robot.leftDrive.setPower(-0.2);
+                    robot.rightDrive.setPower(-0.2);
+                    robot.rightBack.setPower(-0.2);
+                    robot.leftBack.setPower(-0.2);
+                }
+            }
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0) {
+                if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < -35) {
+                    robot.leftDrive.setPower(1);
+                    robot.rightDrive.setPower(1);
+                    robot.rightBack.setPower(1);
+                    robot.leftBack.setPower(1);
+                }
+                else if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0)
+                {
+                    robot.leftDrive.setPower(.2);
+                    robot.rightDrive.setPower(.2);
+                    robot.rightBack.setPower(.2);
+                    robot.leftBack.setPower(.2);
+                }
+
+
+            }
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+            robot.rightBack.setPower(0);
+            robot.leftBack.setPower(0);
+        }
+    }
+    public void alignGyro()
+    {
+        s:while(gamepad1.x)
+        {
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0) {
+                while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0) {
+                    robot.leftDrive.setPower(-.1);
+                    robot.rightDrive.setPower(-.1);
+                    robot.rightBack.setPower(-.1);
+                    robot.leftBack.setPower(-.1);
+                }
+                break s;
+            }
+            else if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0) {
+                while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0) {
+                    robot.leftDrive.setPower(.1);
+                    robot.rightDrive.setPower(.1);
+                    robot.rightBack.setPower(.1);
+                    robot.leftBack.setPower(.1);
+                }
+                break s;
+            }
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+            robot.rightBack.setPower(0);
+            robot.leftBack.setPower(0);
+            sleep(1000);
+
+        }
+    }
+    public void shoot2AlignGyro()
+    {
+        s:while(gamepad1.b)
+        {
+           if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0)
+               shootPositive();
+
+           else if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0)
+               shootNegative();
+           else {
+               robot.leftDrive.setPower(0);
+               robot.rightDrive.setPower(0);
+               robot.rightBack.setPower(0);
+               robot.leftBack.setPower(0);
+           }
+        }
+    }
+    public void shootPositive()
+    {
+        while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0) {
+            newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 25){
+                robot.leftDrive.setPower(-1);
+                robot.rightDrive.setPower(-1);
+                robot.rightBack.setPower(-1);
+                robot.leftBack.setPower(-1);
+            }
+            else
+            {
+                robot.leftDrive.setPower(-0.2);
+                robot.rightDrive.setPower(-0.2);
+                robot.rightBack.setPower(-0.2);
+                robot.leftBack.setPower(-0.2);
+            }
+
+        }
+        if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < -0.5)
+            shootNegative();
+        else {
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+            robot.rightBack.setPower(0);
+            robot.leftBack.setPower(0);
+
+        }
+
+    }
+    public void shootNegative()
+    {
+        while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0) {
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < -35) {
+                robot.leftDrive.setPower(1);
+                robot.rightDrive.setPower(1);
+                robot.rightBack.setPower(1);
+                robot.leftBack.setPower(1);
+            }
+            else if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < 0)
+            {
+                robot.leftDrive.setPower(.2);
+                robot.rightDrive.setPower(.2);
+                robot.rightBack.setPower(.2);
+                robot.leftBack.setPower(.2);
+            }
+
+        }
+        if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > 0.5)
+            shootPositive();
+        else {
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+            robot.rightBack.setPower(0);
+            robot.leftBack.setPower(0);
+
+        }
+    }
 }

@@ -7,9 +7,23 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gyroscope;
+import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 /**
  * This is NOT an opmode.
@@ -49,15 +63,19 @@ public DcMotor wobblyJoint = null;
 public Servo wobblyClaw = null;
 public CRServo topSlider = null;
 public CRServo bottomSlider = null;
+public Servo distanceServo = null;
+public DistanceSensor distanceSensor = null;
+
+
 /*public DcMotor pincher = null;
 public DcMotor lifter = null;
 public DcMotor lifter1 = null;
 public DcMotor straight = null;
 public Servo Rightglock = null;
-public Servo Leftglock = null;
-public ModernRoboticsI2cColorSensor LeftColorSensor  = null;
-public ModernRoboticsI2cColorSensor BackColorSensor = null;
-public ModernRoboticsI2cColorSensor FrontColorSensor = null;*/
+public Servo Leftglock = null;*/
+//public ModernRoboticsI2cColorSensor LeftColorSensor  = null;
+//public ModernRoboticsI2cColorSensor BackColorSensor = null;
+//public ModernRoboticsI2cColorSensor FrontColorSensor = null;
 
 
 public final static double ARM_HOME = 0.0;
@@ -67,9 +85,9 @@ public final static double MAX_ARM_RANGE = 1.0;
 //public DcMotor dustbin = null;
 public DcMotor[] motors = new DcMotor[4];
 //public Servo binBlock = null;
-public AnalogInput pixy = null;
+//public AnalogInput pixy = null;
 //public GyroUnshafter gyro;
-public ModernRoboticsI2cGyro gyro = null;
+//public ModernRoboticsI2cGyro gyro = null;
 
 HardwareMap hwMap  = null;
 private ElapsedTime period  = new ElapsedTime();
@@ -82,6 +100,10 @@ public HardwareBionicbot() {
 public void init(HardwareMap ahwMap) {
     hwMap = ahwMap;
     //Color_Sensor = hwMap.get(ColorSensor.class, "sensor_color");
+//    IntegratingGyroscope gyro;
+//    ModernRoboticsI2cGyro modernRoboticsI2cGyro;
+
+
     leftDrive  = hwMap.get(DcMotor.class, "left_drive");
     rightDrive = hwMap.get(DcMotor.class, "right_drive");
     leftBack = hwMap.get(DcMotor.class, "left_back");
@@ -93,16 +115,20 @@ public void init(HardwareMap ahwMap) {
     wobblyClaw = hwMap.get(Servo.class, "wobbly_claw");
     topSlider = hwMap.get(CRServo.class,"top_slider");
     bottomSlider = hwMap.get(CRServo.class,"bottom_slider");
+    distanceServo = hwMap.get(Servo.class,"distance_servo");
+    distanceSensor = hwMap.get(DistanceSensor.class,"distance_sensor");
 
+//    modernRoboticsI2cGyro = hwMap.get(ModernRoboticsI2cGyro.class, "gyro");
+//    gyro = (IntegratingGyroscope)modernRoboticsI2cGyro;
     /*lifter = hwMap.get(DcMotor.class,"lifter");
     pincher = hwMap.get(DcMotor.class, "pincher");
     lifter1 = hwMap.get(DcMotor.class,"lifter1");
     straight = hwMap.get(DcMotor.class,"straight");
     Rightglock = hwMap.get(Servo.class, "Largeglock");
-    Leftglock = hwMap.get(Servo.class, "Smallglock");
-    LeftColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"LeftColor");
-    BackColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class, "BackColor");
-    FrontColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class, "FrontColor");*/
+    Leftglock = hwMap.get(Servo.class, "Smallglock");*/
+//    LeftColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"LeftColor");
+//    BackColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class, "BackColor");
+//    FrontColorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class, "FrontColor");
 
 
 

@@ -1,14 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 @Autonomous(name="BlueLeftFour", group="BionicBot")
 public class BlueLeftFour extends LinearOpMode
 {
+    BNO055IMU imu;
+
+    Orientation angles;
+    Orientation newAngles;
 HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
 private ElapsedTime runtime = new ElapsedTime();
 
@@ -47,24 +57,19 @@ public void runOpMode()
 
     waitForStart();
 
-    DriveForwardDistance(.5,12);
+    //DriveForwardDistance(.5,12);
     StrafeLeftDistance(.5,14);
-    DriveForwardDistance(.5,92);
-    robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
-    sleep(800);
+    /*DriveForwardDistance(.5,92);
+    wobblyJoint(.2,-600);
     robot.wobblyClaw.setPosition(.8);
-    sleep(1000);
-    robot.wobblyJoint.setPower(.5);
-    sleep(100);
-    robot.wobblyJoint.setPower(0);
     DriveBackwardDistance(.5,46);
     StrafeRightDistance(.5,23);
     TurnLeftDistance(.5,48);
-    robot.leftShooter.setPower(.42);
-    robot.rightShooter.setPower(-.42);
+    robot.leftShooter.setPower(.436);
+    robot.rightShooter.setPower(-.436);
     sleep(1000);
-    Shoot(.42,12000);
-    DriveBackwardDistance(.5,15);
+    Shoot(.436,12000);
+    DriveBackwardDistance(.5,15);*/
     sleep(100000000);
 
 
@@ -203,6 +208,7 @@ public void TurnRightDistance(double speed, int distanceInches)
 }
 public void StrafeLeftDistance(double speed, int distanceInches)
 {
+    double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
     double rotationsneeded = distanceInches/CIRCUMFERENCE;
     int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -223,6 +229,8 @@ public void StrafeLeftDistance(double speed, int distanceInches)
     robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
 
 
     StrafLeft(speed);
@@ -343,7 +351,22 @@ public void StrafeRightDistance(double speed, int distanceInches)
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void wobblyJoint(double power, int tick)
+    {
+        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + tick);
+
+        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.wobblyJoint.setPower(power);
+
+        while (robot.wobblyJoint.isBusy())
+        {
+
+        }
+        robot.wobblyJoint.setPower(0);
+    }
 public void DriveForward(double power)
 {
     robot.leftDrive.setPower(-power);
@@ -406,5 +429,26 @@ public void StopDriving()
     robot.rightDrive.setPower(0);
     robot.leftBack.setPower(0);
     robot.rightBack.setPower(0);
+}
+public void GyroCorrect(double degree1, double degree2){
+    if(degree1 < degree2){
+        while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree1 + 0.5){
+            robot.leftDrive.setPower(-.1);
+            robot.rightDrive.setPower(-.1);
+            robot.leftBack.setPower(-.1);
+            robot.rightBack.setPower(-.1);
+        }
+    }
+    else if(degree1 > degree2){
+        while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree1 - 0.5){
+            robot.leftDrive.setPower(.1);
+            robot.rightDrive.setPower(.1);
+            robot.leftBack.setPower(.1);
+            robot.rightBack.setPower(.1);
+        }
+    }
+
+
+
 }
 }
