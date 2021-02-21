@@ -1,15 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @Autonomous(name="Test Autonomous", group="BionicBot")
 public class TestAutonomous1 extends LinearOpMode
 {
-    HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
+    TestHardwareBionicbot         robot   = new TestHardwareBionicbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 537.6  ;    // eg: TETRIX Motor Encoder
@@ -20,33 +26,47 @@ public class TestAutonomous1 extends LinearOpMode
             (CIRCUMFERENCE);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+    BNO055IMU imu;
+
+    Orientation angles;
+    Orientation newAngles;
+    @Override
     public void runOpMode()
     {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
+        imu = hardwareMap.get(BNO055IMU.class,"imu");
+        imu.initialize(parameters);
         robot.init(hardwareMap);
 
-//        robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-        robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        waitForStart();
+
+        double firstD = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        LeftDiagonal(1,1000);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        telemetry.addData("Heading", angles.firstAngle);
+        telemetry.addData("Roll", angles.secondAngle);
+        telemetry.addData("Pitch",angles.thirdAngle);
+        telemetry.update();
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        GyroCorrect(firstD,imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
 
 
 //        robot.BackColorSensor.enableLed(true);
 //        robot.FrontColorSensor.enableLed(true);
 
 
-        waitForStart();
+
 
 //        telemetry.addData("Color Number of Left Color Sensor: ", robot.FrontColorSensor.readUnsignedByte((ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER)));
 
     }
     public void DriveForwardDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -66,7 +86,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -79,6 +99,7 @@ public class TestAutonomous1 extends LinearOpMode
     }
     public void DriveBackwardDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
         robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -96,7 +117,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         DriveBackward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -107,7 +128,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void TurnLeftDistance(double speed, int distanceInches)
+    public void TurnLeftDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -139,7 +160,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void TurnRightDistance(double speed, int distanceInches)
+    public void TurnRightDistance(double speed, double distanceInches)
     {
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
@@ -171,8 +192,9 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void StrafLeftDistance(double speed, int distanceInches)
+    public void StrafeLeftDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -195,8 +217,8 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-        StrafLeft(speed);
-
+        StrafeLeft(speed);
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() && robot.leftDrive.isBusy()) {
 
         }
@@ -207,8 +229,9 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void StrafRightDistance(double speed, int distanceInches)
+    public void StrafeRightDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -234,8 +257,8 @@ public class TestAutonomous1 extends LinearOpMode
 
 
 
-        StrafRight(speed);
-
+        StrafeRight(speed);
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
 
         while(robot.leftDrive.isBusy() && robot.rightBack.isBusy() && robot.leftBack.isBusy() && robot.rightDrive.isBusy())
         {
@@ -249,6 +272,7 @@ public class TestAutonomous1 extends LinearOpMode
     }
     public void RightDiagonal(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -268,7 +292,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -281,6 +305,7 @@ public class TestAutonomous1 extends LinearOpMode
     }
     public void LeftDiagonal(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -300,7 +325,7 @@ public class TestAutonomous1 extends LinearOpMode
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -311,43 +336,6 @@ public class TestAutonomous1 extends LinearOpMode
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void wobblyJoint(double power, int tick)
-    {
-        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + tick);
-
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.wobblyJoint.setPower(power);
-
-        while (robot.wobblyJoint.isBusy())
-        {
-
-        }
-        robot.wobblyJoint.setPower(0);
-    }
-    public void revHex(double power, int tick)
-    {
-        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - tick);
-
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.wobblyJoint.setPower(power);
-
-        while(robot.wobblyJoint.isBusy())
-        {
-            robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        }
-        robot.wobblyJoint.setPower(0);
-
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
-
     public void DriveForward(double power)
     {
         robot.leftDrive.setPower(-power);
@@ -376,19 +364,87 @@ public class TestAutonomous1 extends LinearOpMode
         robot.rightBack.setPower(-power);
         robot.leftBack.setPower(power);
     }
-    public void StrafLeft(double power)
+    public void StrafeLeft(double power)
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(power);
         robot.leftBack.setPower(power);
         robot.rightBack.setPower(-power);
     }
-    public void StrafRight(double power)
+    public void StrafeRight(double power)
     {
         robot.leftDrive.setPower(power);
         robot.rightDrive.setPower(-power);
         robot.leftBack.setPower(-power);
         robot.rightBack.setPower(power);
+    }
+
+    public void GyroCorrect(double degree1, double degree2){
+        if(degree1 < degree2){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree1 + 0.5){
+                robot.leftDrive.setPower(-.1);
+                robot.rightDrive.setPower(.1);
+                robot.leftBack.setPower(-.1);
+                robot.rightBack.setPower(.1);
+            }
+        }
+        else if(degree1 > degree2){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree1 - 0.5){
+                robot.leftDrive.setPower(.1);
+                robot.rightDrive.setPower(-.1);
+                robot.leftBack.setPower(.1);
+                robot.rightBack.setPower(-.1);
+            }
+        }
+    }
+
+    public void GyroFlip(double degree){
+        if(degree > -180 && degree < -160){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree - 4){
+                robot.leftDrive.setPower(.1);
+                robot.rightDrive.setPower(-.1);
+                robot.leftBack.setPower(-.1);
+                robot.rightBack.setPower(.1);
+            }
+        }
+        else if(degree < 180 && degree > 160){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree + 4){
+                robot.leftDrive.setPower(-.1);
+                robot.rightDrive.setPower(.1);
+                robot.leftBack.setPower(.1);
+                robot.rightBack.setPower(-.1);
+            }
+        }
+
+
+
+    }
+    public void Gyro180()
+    {
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -175) {
+            newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -120){
+                robot.leftDrive.setPower(-1);
+                robot.rightDrive.setPower(1);
+                robot.rightBack.setPower(1);
+                robot.leftBack.setPower(-1);
+            }
+            else{
+                robot.leftDrive.setPower(-0.2);
+                robot.rightDrive.setPower(0.2);
+                robot.rightBack.setPower(0.2);
+                robot.leftBack.setPower(-0.2);
+            }
+            telemetry.addData("Heading", newAngles.firstAngle);
+            telemetry.addData("Roll", newAngles.secondAngle);
+            telemetry.addData("Pitch",newAngles.thirdAngle);
+            telemetry.update();
+        }
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftBack.setPower(0);
     }
 
     public void StopDriving()
@@ -401,8 +457,17 @@ public class TestAutonomous1 extends LinearOpMode
     public void DriveForward(double power, int sleepTime)
     {
         robot.leftDrive.setPower(-power);
-        robot.rightDrive.setPower(power);
-        robot.rightBack.setPower(power);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(-power);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void LeftDiagonal(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(0);
         robot.leftBack.setPower(-power);
         sleep(sleepTime);
         StopDriving();
@@ -438,17 +503,17 @@ public class TestAutonomous1 extends LinearOpMode
     {
         robot.leftDrive.setPower(-power);
         robot.rightDrive.setPower(-power);
-        robot.leftBack.setPower(power);
-        robot.rightBack.setPower(power);
+        robot.leftBack.setPower(-power);
+        robot.rightBack.setPower(-power);
         sleep(sleepTime);
         StopDriving();
     }
     public void StrafeLeft(double power, int sleepTime)
     {
         robot.leftDrive.setPower(power);
-        robot.rightDrive.setPower(power);
+        robot.rightDrive.setPower(-power);
         robot.leftBack.setPower(-power);
-        robot.rightBack.setPower(-power);
+        robot.rightBack.setPower(power);
         sleep(sleepTime);
         StopDriving();
     }
@@ -484,13 +549,5 @@ public class TestAutonomous1 extends LinearOpMode
         sleep(sleepTime);
         StopDriving();
     }
-    public void Shoot(double power, int sleepTime)
-    {
-        robot.leftShooter.setPower(-1);
-        robot.rightShooter.setPower(1);
-        robot.bottomSlider.setPower(1);
-        robot.topSlider.setPower(1);
-        sleep(sleepTime);
-        StopDriving();
-    }
+
 }
