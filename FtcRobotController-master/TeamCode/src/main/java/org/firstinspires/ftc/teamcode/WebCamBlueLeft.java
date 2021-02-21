@@ -117,7 +117,10 @@ public class WebCamBlueLeft extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
+    BNO055IMU imu;
 
+    Orientation angles;
+    Orientation newAngles;
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -158,6 +161,11 @@ public class WebCamBlueLeft extends LinearOpMode {
 
             }
         }telemetry.update();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
+        imu = hardwareMap.get(BNO055IMU.class,"imu");
+        imu.initialize(parameters);
         robot.init(hardwareMap);
 
         robot.wobblyClaw.setPosition(-1);
@@ -320,6 +328,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void DriveForwardDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -339,7 +348,7 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -352,6 +361,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void DriveBackwardDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
         robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -369,7 +379,7 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         DriveBackward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -446,6 +456,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void StrafeLeftDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -469,7 +480,7 @@ public class WebCamBlueLeft extends LinearOpMode {
 
 
         StrafeLeft(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() && robot.leftDrive.isBusy()) {
 
         }
@@ -482,6 +493,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void StrafeRightDistance(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -508,7 +520,7 @@ public class WebCamBlueLeft extends LinearOpMode {
 
 
         StrafeRight(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
 
         while(robot.leftDrive.isBusy() && robot.rightBack.isBusy() && robot.leftBack.isBusy() && robot.rightDrive.isBusy())
         {
@@ -522,6 +534,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void RightDiagonal(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -541,7 +554,7 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -554,6 +567,7 @@ public class WebCamBlueLeft extends LinearOpMode {
     }
     public void LeftDiagonal(double speed, double distanceInches)
     {
+        double degree = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         double rotationsneeded = distanceInches/CIRCUMFERENCE;
         int distanceTick = (int)(rotationsneeded*COUNTS_PER_MOTOR_REV);
 
@@ -573,7 +587,7 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         DriveForward(speed);
-
+        GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
         while(robot.leftDrive.isBusy() && robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() )
         {
 
@@ -659,7 +673,53 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.topSlider.setPower(0);
         StopDriving();
     }
+    public void GyroCorrect(double degree1, double degree2){
+        if(degree1 < degree2){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree1 + 0.5){
+                robot.leftDrive.setPower(-.1);
+                robot.rightDrive.setPower(-.1);
+                robot.leftBack.setPower(-.1);
+                robot.rightBack.setPower(-.1);
+            }
+        }
+        else if(degree1 > degree2){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree1 - 0.5){
+                robot.leftDrive.setPower(.1);
+                robot.rightDrive.setPower(.1);
+                robot.leftBack.setPower(.1);
+                robot.rightBack.setPower(.1);
+            }
+        }
+    }
 
+    public void GyroFlip(double degree){
+        if(degree > -180 && degree < -160){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree + 0.5){
+                robot.leftDrive.setPower(-.1);
+                robot.rightDrive.setPower(-.1);
+                robot.leftBack.setPower(-.1);
+                robot.rightBack.setPower(-.1);
+            }
+        }
+        else if(degree < 180 && degree > 160){
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree - 0.5){
+                robot.leftDrive.setPower(.1);
+                robot.rightDrive.setPower(.1);
+                robot.leftBack.setPower(.1);
+                robot.rightBack.setPower(.1);
+            }
+        }
+
+
+
+    }
+
+   /* public void GyroFlipSap(){
+        if()
+
+
+
+    }*/
 
 
 
@@ -671,4 +731,6 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightBack.setPower(0);
         sleep(500);
     }
+
+
 }

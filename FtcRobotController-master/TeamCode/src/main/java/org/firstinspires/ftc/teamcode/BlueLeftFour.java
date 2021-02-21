@@ -230,11 +230,8 @@ public void StrafeLeftDistance(double speed, int distanceInches)
     robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     robot.leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-    GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-
-
     StrafLeft(speed);
-
+    GyroCorrect(degree, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
     while(robot.rightDrive.isBusy() && robot.leftBack.isBusy() && robot.rightBack.isBusy() && robot.leftDrive.isBusy()) {
 
     }
