@@ -65,6 +65,9 @@ public CRServo topSlider = null;
 public CRServo bottomSlider = null;
 public Servo distanceServo = null;
 public DistanceSensor distanceSensor = null;
+public Servo LServo = null;
+public CRServo rotServo = null;
+public DcMotor shootSlider = null;
 
 
 /*public DcMotor pincher = null;
@@ -110,13 +113,12 @@ public void init(HardwareMap ahwMap) {
     rightBack = hwMap.get(DcMotor.class, "right_back");
     intake = hwMap.get(DcMotor.class, "intake");
     leftShooter = hwMap.get(DcMotor.class, "left_shooter");
-    rightShooter = hwMap.get(DcMotor.class, "right_shooter");
     wobblyJoint = hwMap.get(DcMotor.class, "wobbly_joint");
     wobblyClaw = hwMap.get(Servo.class, "wobbly_claw");
-    topSlider = hwMap.get(CRServo.class,"top_slider");
-    bottomSlider = hwMap.get(CRServo.class,"bottom_slider");
-    distanceServo = hwMap.get(Servo.class,"distance_servo");
     distanceSensor = hwMap.get(DistanceSensor.class,"distance_sensor");
+    LServo = hwMap.get(Servo.class, "launch_servo");
+    rotServo = hwMap.get(CRServo.class, "rotServo");
+    shootSlider = hwMap.get(DcMotor.class, "shootSlider");
 
 //    modernRoboticsI2cGyro = hwMap.get(ModernRoboticsI2cGyro.class, "gyro");
 //    gyro = (IntegratingGyroscope)modernRoboticsI2cGyro;
