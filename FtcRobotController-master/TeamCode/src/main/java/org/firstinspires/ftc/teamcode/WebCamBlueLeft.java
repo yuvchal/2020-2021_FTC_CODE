@@ -257,25 +257,58 @@ public class WebCamBlueLeft extends LinearOpMode {
     public void ZeroLocation()
     {
         robot.wobblyClaw.setPosition(-1);
-        DriveForwardDistance(.5,12);
-        TurnLeftDistance(.5,48.5);
-        StrafeRightDistance(.5,15);
-        DriveBackwardDistance(.5,80);
-        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
-        sleep(800);
-        robot.wobblyClaw.setPosition(.8);
-        sleep(1000);
-        robot.wobblyJoint.setPower(.5);
-        sleep(100);
-        robot.wobblyJoint.setPower(0);
-        DriveBackwardDistance(.5,10);
-        StrafeLeftDistance(.5,27);
-        DriveForwardDistance(.5,46);
-        robot.leftShooter.setPower(.45);
-        robot.rightShooter.setPower(-.45);
-        sleep((1000));
-        Shoot(.45,7500);
-        DriveBackwardDistance(.5,15);
+        DriveForwardDistance(1,48);
+        StrafeLeftDistance(1,5);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+         */
+
+        StrafeRightDistance(1,24);
+        TurnLeftDistance(.5,48);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle,180);
+        /*
+        SHOOT
+         */
+        StrafeLeftDistance(1,18);
+        DriveForwardDistance(1,35);
+        /*
+            robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+         */
+        TurnRightDistance(.5,24);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, 90);
+        StrafeRightDistance(1,35);
+        DriveForwardDistance(1,20);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+         */
+        StrafeLeftDistance(1,10);
+
         sleep(5000);
         sleep(10000000);
     }
@@ -283,48 +316,121 @@ public class WebCamBlueLeft extends LinearOpMode {
     public void SingleLocation()
     {
         robot.wobblyClaw.setPosition(-1);
-        DriveForwardDistance(.5,12);
-        StrafeLeftDistance(.5,12);
-        DriveForwardDistance(.5,68);
-        StrafeRightDistance(.5,21);
-        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
-        sleep(800);
-        robot.wobblyClaw.setPosition(.8);
-        sleep(1000);
-        robot.wobblyJoint.setPower(.5);
-        sleep(100);
-        robot.wobblyJoint.setPower(0);
-        DriveBackwardDistance(.5,21);
+        DriveForwardDistance(1,50);
+        StrafeRightDistance(1,10);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+        */
+        DriveBackwardDistance(1,20);
         TurnLeftDistance(.5,48);
-        robot.leftShooter.setPower(.45);
-        robot.rightShooter.setPower(-.45);
-        sleep(1000);
-        Shoot(.45,7300);
-        DriveBackwardDistance(.5,10);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle,180);
+        /*
+        SHOOT
+         */
+        robot.intake.setPower(1);
+        DriveBackwardDistance(1,30);
+        robot.intake.setPower(0);
+        DriveForwardDistance(1,30);
+        /*
+        SHOOT
+        */
+        StrafeLeftDistance(1,18);
+        DriveForwardDistance(1,35);
+        /*
+            robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+         */
+        TurnRightDistance(.5,24);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, 90);
+        StrafeRightDistance(1,40);
+        DriveForwardDistance(1,15);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+         */
+        StrafeLeftDistance(1,15);
         sleep(100000000);
     }
     public void QuadLocation()
     {
         robot.wobblyClaw.setPosition(-1);
-        DriveForwardDistance(.5,12);
-        StrafeLeftDistance(.5,14);
-        DriveForwardDistance(.5,92);
-        robot.wobblyJoint.setPower(-1);     //positive power make the claw go up from the robot side
-        sleep(800);
-        robot.wobblyClaw.setPosition(.8);
-        sleep(1000);
-        robot.wobblyJoint.setPower(.5);
-        sleep(100);
-        robot.wobblyJoint.setPower(0);
-        DriveBackwardDistance(.5,46);
-        StrafeRightDistance(.5,23);
+        DriveForwardDistance(1,70);
+        StrafeLeftDistance(1,5);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+         */
+
+        StrafeRightDistance(1,24);
         TurnLeftDistance(.5,48);
-        robot.leftShooter.setPower(.45);
-        robot.rightShooter.setPower(-.45);
-        sleep(1000);
-        Shoot(.45,8000);
-        DriveBackwardDistance(.5,15);
-        sleep(100000000);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle,180);
+        DriveForwardDistance(1,30);
+        /*
+        SHOOT
+         */
+        StrafeLeftDistance(1,18);
+        DriveForwardDistance(1,35);
+        /*
+            robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+         */
+        TurnRightDistance(.5,24);
+        GyroCorrect(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, 90);
+        StrafeRightDistance(1,70);
+        DriveForwardDistance(1,30);
+        /*
+        robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() + 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+            robot.wobblyClaw.setPosition(1);
+         */
+        DriveBackwardDistance(1,20);
+        StrafeLeftDistance(1,30);
     }
     public void DriveForwardDistance(double speed, double distanceInches)
     {
@@ -598,25 +704,6 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void revHex(double power, int tick)
-    {
-        robot.wobblyJoint.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - tick);
-
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.wobblyJoint.setPower(power);
-
-        while(robot.wobblyJoint.isBusy())
-        {
-
-        }
-        robot.wobblyJoint.setPower(0);
-
-        robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
     public void DriveForward(double power)
     {
         robot.leftDrive.setPower(-power);
@@ -660,68 +747,73 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightBack.setPower(power);
     }
 
-    public void Shoot(double power, int sleepTime)
-    {
-        robot.leftShooter.setPower(power);
-        robot.rightShooter.setPower(-power);
-        robot.bottomSlider.setPower(1);
-        robot.topSlider.setPower(1);
-        sleep(sleepTime);
-        robot.leftShooter.setPower(0);
-        robot.rightShooter.setPower(0);
-        robot.bottomSlider.setPower(0);
-        robot.topSlider.setPower(0);
-        StopDriving();
-    }
     public void GyroCorrect(double degree1, double degree2){
         if(degree1 < degree2){
             while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree1 + 0.5){
                 robot.leftDrive.setPower(-.1);
-                robot.rightDrive.setPower(-.1);
+                robot.rightDrive.setPower(.1);
                 robot.leftBack.setPower(-.1);
-                robot.rightBack.setPower(-.1);
+                robot.rightBack.setPower(.1);
             }
         }
         else if(degree1 > degree2){
             while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree1 - 0.5){
                 robot.leftDrive.setPower(.1);
-                robot.rightDrive.setPower(.1);
+                robot.rightDrive.setPower(-.1);
                 robot.leftBack.setPower(.1);
-                robot.rightBack.setPower(.1);
+                robot.rightBack.setPower(-.1);
             }
         }
     }
 
     public void GyroFlip(double degree){
         if(degree > -180 && degree < -160){
-            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree + 0.5){
-                robot.leftDrive.setPower(-.1);
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > degree - 4){
+                robot.leftDrive.setPower(.1);
                 robot.rightDrive.setPower(-.1);
                 robot.leftBack.setPower(-.1);
-                robot.rightBack.setPower(-.1);
+                robot.rightBack.setPower(.1);
             }
         }
         else if(degree < 180 && degree > 160){
-            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree - 0.5){
-                robot.leftDrive.setPower(.1);
+            while(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < degree + 4){
+                robot.leftDrive.setPower(-.1);
                 robot.rightDrive.setPower(.1);
                 robot.leftBack.setPower(.1);
-                robot.rightBack.setPower(.1);
+                robot.rightBack.setPower(-.1);
             }
         }
 
 
 
     }
+    public void Gyro180()
+    {
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -175) {
+            newAngles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
 
-   /* public void GyroFlipSap(){
-        if()
-
-
-
-    }*/
-
-
+            if(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > -120){
+                robot.leftDrive.setPower(-1);
+                robot.rightDrive.setPower(1);
+                robot.rightBack.setPower(1);
+                robot.leftBack.setPower(-1);
+            }
+            else{
+                robot.leftDrive.setPower(-0.2);
+                robot.rightDrive.setPower(0.2);
+                robot.rightBack.setPower(0.2);
+                robot.leftBack.setPower(-0.2);
+            }
+            telemetry.addData("Heading", newAngles.firstAngle);
+            telemetry.addData("Roll", newAngles.secondAngle);
+            telemetry.addData("Pitch",newAngles.thirdAngle);
+            telemetry.update();
+        }
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftBack.setPower(0);
+    }
 
     public void StopDriving()
     {
@@ -729,7 +821,101 @@ public class WebCamBlueLeft extends LinearOpMode {
         robot.rightDrive.setPower(0);
         robot.leftBack.setPower(0);
         robot.rightBack.setPower(0);
-        sleep(500);
+    }
+    public void DriveForward(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(-power);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(-power);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void LeftDiagonal(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(0);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void DriveBackward(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(-power);
+        robot.leftBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void TurnLeft(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(power);
+        robot.rightBack.setPower(power);
+        robot.leftBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void TurnRight(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(-power);
+        robot.rightDrive.setPower(-power);
+        robot.rightBack.setPower(-power);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void StrafeRight(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(-power);
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(-power);
+        robot.rightBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void StrafeLeft(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(power);
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(-power);
+        robot.rightBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void DownLeft(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(0);
+        robot.leftBack.setPower(0);
+        robot.leftDrive.setPower(power);
+        robot.rightBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void DownRight(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(-power);
+        robot.leftBack.setPower(power);
+        robot.leftDrive.setPower(0);
+        robot.rightBack.setPower(0);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void UpLeft(double power, int sleepTime)
+    {
+        robot.rightDrive.setPower(power);
+        robot.leftBack.setPower(-power);
+        sleep(sleepTime);
+        StopDriving();
+    }
+    public void UpRight(double power, int sleepTime)
+    {
+        robot.leftDrive.setPower(-power);
+        robot.rightBack.setPower(power);
+        sleep(sleepTime);
+        StopDriving();
     }
 
 

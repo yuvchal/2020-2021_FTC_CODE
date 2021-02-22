@@ -15,7 +15,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 @Autonomous(name="Test Autonomous", group="BionicBot")
 public class TestAutonomous1 extends LinearOpMode
 {
-    TestHardwareBionicbot         robot   = new TestHardwareBionicbot();   // Use a Pushbot's hardware
+    HardwareBionicbot         robot   = new HardwareBionicbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 537.6  ;    // eg: TETRIX Motor Encoder
@@ -42,8 +42,9 @@ public class TestAutonomous1 extends LinearOpMode
 
 
         waitForStart();
+        //while(robot.blueDistance)
 
-        double firstD = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+       /* double firstD = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         LeftDiagonal(1,1000);
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
@@ -52,7 +53,7 @@ public class TestAutonomous1 extends LinearOpMode
         telemetry.addData("Pitch",angles.thirdAngle);
         telemetry.update();
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        GyroCorrect(firstD,imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+        GyroCorrect(firstD,imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);*/
 
 
 //        robot.BackColorSensor.enableLed(true);

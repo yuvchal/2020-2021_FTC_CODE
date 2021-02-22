@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -30,6 +31,8 @@ public void runOpMode() {
     imu.initialize(parameters);
 
     robot.init(hardwareMap);
+
+    robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     waitForStart();
 
     while (opModeIsActive()) {
@@ -74,88 +77,95 @@ public void runOpMode() {
             robot.rightBack.setPower(0);
             robot.leftBack.setPower(0);
         }
-        if(gamepad1.right_stick_x < 0)
-        {
+        if (gamepad1.right_stick_x < 0) {
+            robot.leftDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightDrive.setPower(-gamepad1.right_stick_x);
+            robot.rightBack.setPower(-gamepad1.right_stick_x);
+            robot.leftBack.setPower(-gamepad1.right_stick_x);
+        } else if (gamepad1.right_stick_x > 0) {
             robot.leftDrive.setPower(-gamepad1.right_stick_x);
             robot.rightDrive.setPower(-gamepad1.right_stick_x);
             robot.rightBack.setPower(-gamepad1.right_stick_x);
             robot.leftBack.setPower(-gamepad1.right_stick_x);
         }
-        else if(gamepad1.right_stick_x > 0)
-        {
-            robot.leftDrive.setPower(-gamepad1.right_stick_x);
-            robot.rightDrive.setPower(-gamepad1.right_stick_x);
-            robot.rightBack.setPower(-gamepad1.right_stick_x);
-            robot.leftBack.setPower(-gamepad1.right_stick_x);
-        }
-        if (gamepad1.left_trigger > 0)
-        {
+        if (gamepad1.left_trigger > 0) {
             robot.leftDrive.setPower(gamepad1.left_trigger);
             robot.rightDrive.setPower(-gamepad1.left_trigger);
             robot.leftBack.setPower(gamepad1.left_trigger);
             robot.rightBack.setPower(-gamepad1.left_trigger);
-        }
-        else if(gamepad1.right_trigger > 0)
-        {
+        } else if (gamepad1.right_trigger > 0) {
             robot.leftDrive.setPower(-gamepad1.right_trigger);
             robot.rightDrive.setPower(gamepad1.right_trigger);
             robot.leftBack.setPower(-gamepad1.right_trigger);
             robot.rightBack.setPower(gamepad1.right_trigger);
         }
 
-        if(gamepad1.right_bumper)
+        if (gamepad1.right_bumper)
             robot.intake.setPower(1);
-        else if(gamepad1.left_bumper)
+        else if (gamepad1.left_bumper)
             robot.intake.setPower(-1);
         else
             robot.intake.setPower(0);
 
-        if(gamepad2.y)
+        if (gamepad2.y)
             robot.intake.setPower(1);
-        else if(gamepad2.x)
+        else if (gamepad2.x)
             robot.intake.setPower(-1);
         else
             robot.intake.setPower(0);
 
 
-        if(gamepad2.right_bumper) {
-            robot.bottomSlider.setPower(-1);
-            robot.topSlider.setPower(-1);
+        if (gamepad2.right_stick_y > 0) {
+            robot.LServo.setPosition(.85);
+
+            sleep(100);
+
+            robot.shootSlider.setPower(.3);
         }
-        else if(gamepad2.left_bumper) {
-            robot.bottomSlider.setPower(1);
-            robot.topSlider.setPower(1);
-        }
-        else {
-            robot.bottomSlider.setPower(0);
-            robot.topSlider.setPower(0);
+        else
+        {
+            robot.shootSlider.setPower(0);
         }
 
 
-        if(gamepad2.left_trigger > 0) {
-            robot.leftShooter.setPower(1);
-            robot.rightShooter.setPower(-1);
-        }
-        else if(gamepad2.right_trigger > 0) {
-            robot.leftShooter.setPower(1);
-            robot.rightShooter.setPower(-1);
-        }
-        else {
+        if (gamepad2.left_trigger > 0) {
+            robot.leftShooter.setPower(.7);
+        } else if (gamepad2.right_trigger > 0) {
+            robot.leftShooter.setPower(.95);
+        } else {
             robot.leftShooter.setPower(0);
-            robot.rightShooter.setPower(0);
         }
-        if(gamepad2.dpad_left)
-            robot.wobblyJoint.setPower(.5);
-        else if(gamepad2.dpad_right)
-            robot.wobblyJoint.setPower(-.5);
-        else
+        if (gamepad2.dpad_left) {
+
+            robot.wobblyJoint.setPower(1);
+
             robot.wobblyJoint.setPower(0);
-        if(gamepad2.a)
-            robot.wobblyClaw.setPosition(1);
-        else if(gamepad2.b)
+        } else if (gamepad2.dpad_right) {
             robot.wobblyClaw.setPosition(-1);
+            robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.wobblyJoint.setTargetPosition(robot.wobblyJoint.getCurrentPosition() - 600);
+            robot.wobblyJoint.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.wobblyJoint.setPower(-1);
+            while (robot.wobblyJoint.isBusy()) {
+
+            }
+            robot.wobblyJoint.setPower(0);
+        } else {
+            robot.wobblyJoint.setPower(0);
         }
 
+        if (gamepad2.a)
+            robot.wobblyClaw.setPosition(1);
+        else if (gamepad2.b)
+            robot.wobblyClaw.setPosition(-1);
+
+        if (gamepad2.dpad_up) {
+            robot.rotServo.setPower(.8);        }
+        if(gamepad2.left_bumper)
+        {
+            robot.LServo.setPosition(1);
+        }
+    }
 
 }
     public void getDateImu()

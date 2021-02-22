@@ -127,7 +127,8 @@ public class WebCamTester extends LinearOpMode {
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
 
-
+            while(!opModeIsActive())
+            {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -135,9 +136,32 @@ public class WebCamTester extends LinearOpMode {
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        if(updatedRecognitions.size() != 0) {
+                            for (Recognition recognition : updatedRecognitions) {
+                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        recognition.getLeft(), recognition.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        recognition.getRight(), recognition.getBottom());
+
+                                if (recognition.getLabel().equals("Quad")) {
+                                    telemetry.addData("Zero Run", 2);
+                                    //QuadLocation();
+
+                                    break;
+                                } else if (recognition.getLabel().equals("Single")) {
+
+                                    telemetry.addData("Zero Run", 3);
+                                    //SingleLocation();
+                                }
+                            }
+                        }
 
                     }
                 }telemetry.update();
+
+            }
         //robot.init(hardwareMap);
 
         waitForStart();
